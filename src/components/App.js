@@ -15,6 +15,52 @@ class App extends React.Component {
     }
   }
 
+  changeType = (e) => {
+     this.setState({
+       filters: {
+         ...this.state.filters,
+         type: e.target.value
+       }
+     })
+  }
+
+  findPetsClick = () => {
+    switch (this.state.filters.type) {
+      case 'all':
+       fetch('/api/pets').then(res => res.json()).then(pets => {this.setState({
+         pets: pets
+       })})
+      break;
+      case 'cat':
+        fetch('/api/pets?type=cat').then(res => res.json()).then(pets =>
+          {this.setState({
+          pets: pets
+        })})
+       break;
+      case 'dog':
+        fetch('/api/pets?type=dog').then(res => res.json()).then(pets => {this.setState({
+          pets: pets
+        })})
+      break;
+      case 'micropig':
+        fetch('/api/pets?type=micropig').then(res => res.json()).then(pets => {this.setState({
+          pets: pets
+        })})
+       break;
+      default:
+        fetch('/api/pets').then(res => res.json()).then(pets => {this.setState({
+          pets: pets
+        })})
+    }
+  }
+
+   adoptPet = petId => {
+   const pets = this.state.pets.map(p => {
+     return p.id === petId ? { ...p, isAdopted: true } : p;
+   })
+   this.setState({ pets })
+   }
+
   render() {
     return (
       <div className="ui container">
@@ -24,10 +70,10 @@ class App extends React.Component {
         <div className="ui container">
           <div className="ui grid">
             <div className="four wide column">
-              <Filters />
+              <Filters onChangeType={this.changeType} onFindPetsClick={this.findPetsClick}/>
             </div>
             <div className="twelve wide column">
-              <PetBrowser />
+               <PetBrowser pets={this.state.pets} onAdoptPet={this.adoptPet}/>
             </div>
           </div>
         </div>
